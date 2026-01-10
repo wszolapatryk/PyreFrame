@@ -1,76 +1,85 @@
 <!-- Auto-generated guidance for AI coding agents working on PyreFrame -->
 # PyreFrame — Copilot Instructions
 
-This project is a small Rust binary crate (see `Cargo.toml`) with its entrypoint at `src/main.rs`.
-The repo is an experimental game engine framework; the `readme.md` documents high-level goals: modular engine architecture, explicit systems, and decoupling engine code from game logic.
+This project is a learning-focused Rust game engine framework built as a Cargo workspace. The goal is to understand game engine architecture in Rust while emphasizing explicit data flow, clear ownership, simple ECS design, and strong testability. The project avoids over-engineering early, favoring minimal, idiomatic Rust solutions that evolve only when real needs appear. Execution is deterministic with no hidden globals or implicit data flow—all state changes are explicit. Uses stable Rust, avoids macros, heavy generic abstractions, parallelism, and async code for now, prioritizing clarity and correctness over performance.
 
 Quick facts
-- **Entrypoint:** `src/main.rs` (currently prints a placeholder `Hello, world!`).
-- **Manifest:** `Cargo.toml` (edition = 2024, no dependencies listed yet).
-- **Status:** early / experimental; APIs and layout may change frequently (see `readme.md`).
+- **Workspace members:** `engine` (library crate: pyreframe_engine), `game` (binary crate: pyreframe_game) (see [Cargo.toml](../Cargo.toml)).
+- **Engine crate entry:** [engine/src/lib.rs](../engine/src/lib.rs) — re-exports stable engine API.
+- **Game binary entry:** [game/src/main.rs](../game/src/main.rs) — demonstrates engine usage.
+- **Status:** early / experimental; APIs and layout may change frequently as design evolves based on real needs.
 
 What to do when editing
-- If adding runtime code, place modules under `src/` and import them from `src/main.rs` (this repository currently uses a single binary crate layout).
-- Add dependencies in `Cargo.toml` and run `cargo build` to fetch and compile them.
+- Add runtime modules under `engine/src/` and re-export stable types from `engine/src/lib.rs`.
+- Add dependencies in the appropriate `Cargo.toml` (engine or game) and run `cargo build` to fetch and compile them.
+- Prefer small, well-named modules and explicit wiring over large, implicit constructors.
+- Keep public API boundaries small — engine code should be decoupled from game logic.
 
 Build / run / debug commands
-- Build: `cargo build`
-- Run (dev): `cargo run`
-- Run (release): `cargo run --release` or `cargo build --release` then run the binary in `target/release/`.
-- Formatting: `cargo fmt`
-- Lint: `cargo clippy` (if the toolchain is installed)
+- Build entire workspace: `cargo build` (or `cargo build --workspace`).
+- Run the example game: `cargo run -p game`.
+- Run docs: `cargo doc --workspace --no-deps`.
+- Run tests: `cargo test --workspace`.
+- Format: `cargo fmt --all`; Lint: `cargo clippy --all-targets --all-features`.
 
 Project-specific patterns to follow
-- The README emphasizes explicit systems and clear separation between engine and game logic. Prefer small, well-named modules and explicit wiring in `main.rs` rather than large, implicit constructors.
-- Keep public API boundaries small — engine code should be decoupled from game logic per the project's stated goals.
+- **Explicit data flow and ownership:** All state changes are explicit; avoid implicit behavior or hidden globals.
+- **Simple ECS design:** Centralize ECS under `engine/src/ecs`; systems operate via `engine::World`.
+- **Deterministic execution:** Execution order is predictable; no parallelism or async.
+- **Strong testability:** Write tests for new functionality; run `cargo test --workspace` after changes.
+- **Minimal and idiomatic:** Use stable Rust features; avoid macros, complex generics, or premature optimizations.
+- **Evolutionary design:** Only add complexity when real needs arise; start simple and expand based on usage.
 
 Files to inspect for context
-- `readme.md` — high-level goals and intent for architecture
-- `Cargo.toml` — crate metadata and dependencies
-- `src/main.rs` — current program entrypoint and example wiring
+- [README.md](../README.md) — high-level goals and intent for architecture.
+- [Cargo.toml](../Cargo.toml) — workspace configuration.
+- [engine/src/lib.rs](../engine/src/lib.rs) — engine public API.
+- [engine/src/](../engine/src/) — core engine modules (ecs, render, etc.).
+- [game/src/main.rs](../game/src/main.rs) — example game wiring.
+- [tests/](../engine/tests/) — integration tests.
 
 # PyreFrame — AI coding agent instructions
 
-This repository is a small, experimental Rust workspace with two members: the engine library (`engine/`) and an example game binary (`game/`). The project favors explicit, modular systems and clear separation between engine and game logic.
-
-Quick facts
-- Workspace members: `engine`, `game` (see [Cargo.toml](../Cargo.toml)).
-- Engine crate entry: [engine/src/lib.rs](../engine/src/lib.rs) — re-exports stable engine API.
-- Game binary entry: [game/src/main.rs](../game/src/main.rs).
+This repository is a learning-focused Rust workspace for building a game engine. It consists of two crates: the `engine` library exposing core subsystems, and the `game` binary demonstrating usage. The design emphasizes explicit data flow, clear ownership, simple ECS, and testability, evolving minimally as needs appear.
 
 Essential architecture notes
-- The `engine/` crate is a library exposing core subsystems: `ecs`, `render`, `input`, `math`, `time` (see [engine/src/lib.rs](../engine/src/lib.rs) and `engine/src/`).
-- The engine intentionally re-exports a narrow public API (e.g., `World`) from `lib.rs`; keep runtime internals private and add runtime modules under `engine/src/`.
-- The `game/` crate demonstrates how to wire systems and assets on top of the engine; treat it as a usage example rather than production code.
+- The `engine/` crate provides core subsystems: `ecs`, `render`, `input`, `math`, `time`, etc. (see [engine/src/lib.rs](../engine/src/lib.rs)).
+- Re-export a narrow public API from `lib.rs`; keep internals private.
+- The `game/` crate shows how to use the engine; treat it as a usage example, not production code.
+- ECS is central: systems and world state in `engine/src/ecs`; games operate via `engine::World` and registered systems.
 
-Developer workflows (what actually works here)
-- Build entire workspace: `cargo build` (or `cargo build --workspace`).
-- Run the example game: `cargo run -p game`.
-- Run docs: `cargo doc --workspace --no-deps` (docs are generated under `target/doc` and partial HTML is in `doc/`).
-- Run tests: `cargo test --workspace` (there are integration tests under `tests/`).
+Developer workflows
+- Build: `cargo build --workspace`.
+- Run game: `cargo run -p pyreframe_game`.
+- Test: `cargo test --workspace`.
 - Format: `cargo fmt --all`; Lint: `cargo clippy --all-targets --all-features`.
 
 Project-specific conventions
-- Engine-first design: add new runtime modules in `engine/src/` and re-export stable types from `engine/src/lib.rs`.
-- Small, explicit APIs: prefer stable, well-named functions/systems over broad convenience helpers.
-- Modules map to subsystems: e.g., `engine/src/ecs`, `engine/src/render`, `engine/src/input`. When integrating, call into these modules rather than reaching into private internals.
+- Engine-first: Add modules in `engine/src/` and re-export from `lib.rs`.
+- Small, explicit APIs: Prefer stable, well-named functions/systems.
+- Subsystems: e.g., `engine/src/ecs`, `engine/src/render`. Integrate by calling into modules, not internals.
+- Deterministic: No async, parallelism, or non-deterministic behavior.
+- Testable: Add tests for new code; ensure `cargo test --workspace` passes.
 
 Integration points & patterns
-- ECS is central — systems and world state live under `engine/src/ecs`. Games should operate via `engine::World` and registered systems.
-- Renderer and input are engine subsystems; the example game shows registration patterns in `game/src/main.rs` (simple wiring today).
-- Cross-crate communication: `game` depends on `engine` via workspace member; add dependencies in the corresponding `Cargo.toml`.
+- ECS central: Use `engine::World` and systems for game logic.
+- Renderer/input: Engine subsystems; register in `game/src/main.rs`.
+- Cross-crate: `game` depends on `engine`; add deps in respective `Cargo.toml`.
 
 Editing guidance for AI agents
-- Preserve public API shape: when changing `engine/src/lib.rs`, consider compatibility with `game/` and tests.
-- Be explicit in added APIs — add small modules and re-export only the intended surface.
-- Update `README.md` or add a short changelog note when altering API contracts.
+- Preserve API shape: Consider `game/` and tests when changing `lib.rs`.
+- Be explicit: Add small modules and re-export only intended surface.
+- Update docs: Modify `README.md` or add notes for API changes.
+- Constraints: Respect stable Rust, no macros/generics/async/parallelism; prioritize clarity over performance.
+- Feedback focus: Provide architectural feedback, design critique, evolutionary suggestions explaining why approaches are good/bad, respecting learning goals and constraints.
 
 Where to look first
-- [README.md](../README.md) — project goals and layout.
-- [engine/src/lib.rs](../engine/src/lib.rs) and directory `engine/src/` — core engine code.
-- [game/src/main.rs](../game/src/main.rs) — example wiring.
-- [tests/](../engine/tests/) — integration tests that show expected behaviors.
+- [README.md](../README.md) — project goals.
+- [engine/src/lib.rs](../engine/src/lib.rs) — API.
+- [engine/src/](../engine/src/) — engine code.
+- [game/src/main.rs](../game/src/main.rs) — usage.
+- [tests/](../engine/tests/) — tests.
 
-If you change runtime code, run `cargo build` and `cargo test --workspace` before submitting changes. Ask for clarification if an API change affects `game/` or tests.
+After changes, run `cargo build` and `cargo test --workspace`. If API changes affect `game/` or tests, seek clarification.
 
-If anything above is unclear or you want the file expanded with more examples, tell me which area to deepen (module layout examples, test strategy, or CI suggestions).
+For expansions: Ask about module layouts, test strategies, or CI if unclear.

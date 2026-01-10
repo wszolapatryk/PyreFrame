@@ -5,6 +5,7 @@
 //! System execution model.
 //! Minimal, explicit, and data-oriented.
 
+pub mod entity;
 pub mod world;
 pub mod system;
 
