@@ -1,4 +1,3 @@
-
 /// Represents the position of the mouse cursor.
 #[derive(Debug, Clone, Copy, Default)]
 pub struct MousePosition {

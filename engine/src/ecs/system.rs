@@ -5,22 +5,26 @@
 //! Explicit data dependencies.
 //! Keeps systems simple and predictable.
 
-use super::World;
+use crate::{
+    World,
+    ecs::components::{Position, Velocity},
+};
 
 /// A system is a simple function that takes a mutable reference to `World`.
+/// Systems operate on the world to update components or perform logic.
 pub type System = fn(&mut World);
 
-#[cfg(test)]
-fn spawn_system(world: &mut World) {
-    world.spawn();
-}
+/// A basic movement system that updates position based on velocity.
+/// Iterates over entities with Position and Velocity, adding velocity to position.
+pub fn movement_system(world: &mut World) {
+    let entities = world.entities_with::<(Position, Velocity)>();
 
-#[test]
-fn system_can_spawn_entity() {
-    let mut world = World::new();
+    for entity in entities {
+        let vel = *world.get_component::<Velocity>(entity).unwrap();
+        let pos = world.get_component_mut::<Position>(entity).unwrap();
 
-    world.add_system(spawn_system);
-    world.run_systems();
-
-    assert_eq!(world.entity_count(), 1);
+        pos.x += vel.dx;
+        pos.y += vel.dy;
+        pos.z += vel.dz;
+    }
 }

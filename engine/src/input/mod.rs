@@ -11,7 +11,7 @@ mod mouse;
 
 pub use key::Key;
 pub use keyboard::KeyboardState;
-pub use mouse::{MouseState, MousePosition, MouseButtons};
+pub use mouse::{MouseButtons, MousePosition, MouseState};
 
 /// Aggregates all input state for a frame.
 #[derive(Debug, Clone)]

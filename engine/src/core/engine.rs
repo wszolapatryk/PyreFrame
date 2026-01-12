@@ -1,7 +1,7 @@
 use crate::World;
+use crate::core::frame::FrameOutput;
 use crate::core::schedule::Schedule;
 use crate::input::Input;
-use crate::core::frame::FrameOutput;
 
 /// The main game engine.
 /// Orchestrates the ECS world, systems, and rendering.
@@ -31,5 +31,11 @@ impl Engine {
         FrameOutput {
             render_commands: Vec::new(),
         }
+    }
+}
+
+impl Default for Engine {
+    fn default() -> Self {
+        Self::new()
     }
 }

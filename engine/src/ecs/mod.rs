@@ -5,8 +5,10 @@
 //! System execution model.
 //! Minimal, explicit, and data-oriented.
 
+pub mod components;
 pub mod entity;
-pub mod world;
+pub mod query;
 pub mod system;
+pub mod world;
 
 pub use world::World;
