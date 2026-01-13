@@ -14,7 +14,6 @@ use pyreframe_engine::{
 fn main() {
     let mut world = World::new();
 
-    // Spawn player entity and add components
     let player = world.spawn();
 
     world.insert_component(
@@ -43,13 +42,10 @@ fn main() {
         },
     );
 
-    // Add a simple movement system (see below)
     world.add_system(movement_system);
 
-    // Run systems (this will update the entity's position)
     world.run_systems();
 
-    // Example: Query the updated position
     if let Some(pos) = world.get_component::<Position>(player) {
         println!("Entity position: ({}, {}, {})", pos.x, pos.y, pos.z);
     }

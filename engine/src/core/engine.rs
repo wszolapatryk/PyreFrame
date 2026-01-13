@@ -26,7 +26,6 @@ impl Engine {
 
     /// Processes a single frame: updates systems and returns render output.
     pub fn tick(&mut self, _input: Input, _dt: f32) -> FrameOutput {
-        // deterministic execution
         self.schedule.run(&mut self.world);
         FrameOutput {
             render_commands: Vec::new(),

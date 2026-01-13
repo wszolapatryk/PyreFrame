@@ -19,8 +19,6 @@ pub struct World {
     entity_count: usize,
     systems: Vec<System>,
     generations: Vec<usize>,
-    // New: Component storage as a map of entity -> (component type -> component data).
-    // Uses dynamic typing for simplicity; avoids generics/macros.
     components: HashMap<Entity, HashMap<TypeId, Box<dyn Any>>>,
 }
 
@@ -43,7 +41,6 @@ impl World {
             self.generations.push(0);
         }
         let entity = Entity::new(id, self.generations[id]);
-        // Initialize empty component map for the new entity.
         self.components.insert(entity, HashMap::new());
         entity
     }
@@ -65,9 +62,6 @@ impl World {
             system(self);
         }
     }
-
-    // New methods for component management.
-    // These are explicit and safe, ensuring clear data flow.
 
     /// Inserts a component for an entity. Overwrites if it exists.
     /// Returns the old component if replaced.
