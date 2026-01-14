@@ -2,6 +2,7 @@ use crate::World;
 use crate::core::frame::FrameOutput;
 use crate::core::schedule::Schedule;
 use crate::input::Input;
+use crate::time::FrameDelta;
 
 /// The main game engine.
 /// Orchestrates the ECS world, systems, and rendering.
@@ -25,8 +26,20 @@ impl Engine {
     }
 
     /// Processes a single frame: updates systems and returns render output.
-    pub fn tick(&mut self, _input: Input, _dt: f32) -> FrameOutput {
+    pub fn tick(&mut self, _input: Input, dt: f32) -> FrameOutput {
+        // Publish frame delta as a resource
+        match self.world.insert_resource(FrameDelta { dt }) {
+            None => {
+                // First frame: FrameDelta resource inserted into the world.
+            }
+            Some(_previous_delta) => {
+                // Subsequent frames: existing FrameDelta resource updated.
+            }
+        }
+
+        // Run all systems (including TimeSystem)
         self.schedule.run(&mut self.world);
+
         FrameOutput {
             render_commands: Vec::new(),
         }
@@ -34,6 +47,7 @@ impl Engine {
 }
 
 impl Default for Engine {
+    /// Creates a default engine (same as [`crate::core::engine::Engine::new`]).
     fn default() -> Self {
         Self::new()
     }

@@ -16,7 +16,7 @@ fn main() {
 
     let player = world.spawn();
 
-    world.insert_component(
+    let _ = world.insert_component(
         player,
         Position {
             x: 1.0,
@@ -24,7 +24,7 @@ fn main() {
             z: 0.0,
         },
     );
-    world.insert_component(
+    let _ = world.insert_component(
         player,
         Velocity {
             dx: 1.0,
@@ -32,7 +32,7 @@ fn main() {
             dz: 2.0,
         },
     );
-    world.insert_component(
+    let _ = world.insert_component(
         player,
         Color {
             r: 255,
@@ -46,7 +46,7 @@ fn main() {
 
     world.run_systems();
 
-    if let Some(pos) = world.get_component::<Position>(player) {
+    if let Ok(pos) = world.get_component::<Position>(player) {
         println!("Entity position: ({}, {}, {})", pos.x, pos.y, pos.z);
     }
 }
