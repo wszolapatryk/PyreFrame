@@ -19,7 +19,7 @@ fn total_spawned_tracks_all_entities() {
     assert_eq!(world.total_spawned(), 0);
 
     let e1 = world.spawn();
-    let e2 = world.spawn();
+    let _e2 = world.spawn();
     assert_eq!(world.total_spawned(), 2);
 
     world.despawn(e1);
